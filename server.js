@@ -75,7 +75,23 @@ app.get("/", async (req, res) => {
             <link rel="stylesheet" href="/style.css">
         </head>
         <body>
-            <h1>Download file Schematic</h1>
+            <h1 style="text-align:center;">Download file Schematic Note Block</h1>
+            <p style="
+                text-align:center;
+                font-size:14px;
+                opacity:0.8;
+                margin-top:-5px; 
+            ">
+                Mình sẽ chia sẻ file building Note Block ở đây!<br>
+                <span style="font-size:12px; opacity:0.7;">
+                    LƯU Ý: Tất cả các file mình chia sẻ đều sử dụng Note Block Studio!
+                </span><br>
+
+                <span style="font-size:12px; opacity:0.7;">
+                    Mod Minecraft: Litematica
+                </span>
+            </p>
+
             <p style="
                 font-size:13px;
                 opacity:0.8;
