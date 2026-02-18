@@ -83,6 +83,7 @@ app.get("/", async (req, res) => {
                 letter-spacing:0.5px;
             ">
                 Dev by Nguyễn Hưng Ly
+                <a href="https://www.tiktok.com/@nghungly" target="_blank" style="color:#ff0050; text-decoration:none;">
             </p>
 
             ${fileList || "<p>Chưa có file nào</p>"}
