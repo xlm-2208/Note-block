@@ -1,0 +1,25 @@
+{
+  "name": "web_music",
+  "version": "1.0.0",
+  "description": "\"# web-note-block\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xlm-2208/Note-block.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/xlm-2208/Note-block/issues"
+  },
+  "homepage": "https://github.com/xlm-2208/Note-block#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "multer": "^2.0.2"
+  }
+}
