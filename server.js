@@ -78,13 +78,21 @@ app.get("/", async (req, res) => {
             <h1>Note Block</h1>
             <p style="
                 font-size:13px;
-                opacity:0.7;
+                opacity:0.8;
                 margin-top:-10px;
-                letter-spacing:0.5px;
             ">
-                Dev by Nguyễn Hưng Ly
-                <a href="https://www.tiktok.com/@nghungly" target="_blank" style="color:#ff0050; text-decoration:none;">
+                Dev by Nguyễn Hưng Ly · 
+                <a href="https://www.tiktok.com/nghungly"
+                target="_blank"
+                style="
+                    color:#ff0050;
+                    font-weight:bold;
+                    text-decoration:none;
+                ">
+                Follow on TikTok
+                </a>
             </p>
+
 
             ${fileList || "<p>Chưa có file nào</p>"}
         </body>
