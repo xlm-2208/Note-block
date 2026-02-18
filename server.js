@@ -159,7 +159,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     const content = fs.readFileSync(req.file.path).toString("base64");
 
     try {
-        await githubAPI.put(`/contents/${fileName}`, {
+        await githubAPI.put(`/contents/${GITHUB_FOLDER}/${fileName}`, {
             message: `Upload ${fileName}`,
             content: content,
             branch: BRANCH
