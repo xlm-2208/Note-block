@@ -1,0 +1,33 @@
+body {
+    background: #111;
+    color: white;
+    font-family: Arial;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.file {
+    background: #1e1e1e;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file a {
+    background: #00c853;
+    color: white;
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+#fileName {
+    color: #00c853;
+    font-weight: bold;
+}
