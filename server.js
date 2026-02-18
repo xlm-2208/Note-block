@@ -23,6 +23,7 @@ if (!GITHUB_TOKEN || !GITHUB_USERNAME || !STORAGE_REPO) {
 // ===== BASIC =====
 app.use(express.urlencoded({ extended: true }));
 app.use("/style.css", express.static(path.join(__dirname, "public/style.css")));
+app.use(express.static('public'));
 
 app.get("/ping", (req, res) => {
     res.status(200).send("OK");
@@ -73,6 +74,7 @@ app.get("/", async (req, res) => {
             <meta charset="UTF-8">
             <title>Schematic Download</title>
             <link rel="stylesheet" href="/style.css">
+            <link rel="icon" type="image/x-icon" href="/favicon.ico">
         </head>
         <body>
             <h1 style="text-align:center;">Download file Schematic Note Block</h1>
