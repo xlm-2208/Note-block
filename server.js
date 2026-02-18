@@ -2,51 +2,64 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
 
 const app = express();
-const PORT = process.env.PORT || 3000; // ✅ BẮT BUỘC dùng PORT này trên Render
+const PORT = process.env.PORT || 3000;
 
-const ADMIN_PASSWORD = "sclscl123456789@@@@"; // đổi mật khẩu ở đây
+const ADMIN_PASSWORD = "sclscl123456789@@@@";
 
-// ===== BẮT LỖI TOÀN SERVER (tránh crash 503) =====
-process.on("uncaughtException", (err) => {
-    console.error("Uncaught Exception:", err);
-});
+// ===== ENV =====
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_USERNAME = process.env.GITHUB_USERNAME;
+const STORAGE_REPO = process.env.STORAGE_REPO;
+const BRANCH = "main";
 
-process.on("unhandledRejection", (err) => {
-    console.error("Unhandled Rejection:", err);
-});
-
-// ===== TẠO THƯ MỤC UPLOAD =====
-const uploadDir = path.join(__dirname, "uploads");
-
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+if (!GITHUB_TOKEN || !GITHUB_USERNAME || !STORAGE_REPO) {
+    console.error("Missing GitHub environment variables!");
 }
 
+// ===== BASIC =====
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static(uploadDir));
 app.use("/style.css", express.static(path.join(__dirname, "public/style.css")));
 
-// ===== HEALTH CHECK =====
 app.get("/ping", (req, res) => {
     res.status(200).send("OK");
 });
 
-// ===== TRANG CHỦ =====
-app.get("/", (req, res) => {
-
-    fs.readdir(uploadDir, (err, files) => {
-
-        if (err) {
-            console.error(err);
-            return res.send("Lỗi đọc file");
+// ===== MULTER (temporary local only) =====
+const upload = multer({
+    dest: "temp/",
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: function (req, file, cb) {
+        const allowed = [".litematic", ".schematic"];
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (!allowed.includes(ext)) {
+            return cb(new Error("Chỉ cho upload .litematic hoặc .schematic"));
         }
+        cb(null, true);
+    }
+});
+
+// ===== HELPER =====
+const githubAPI = axios.create({
+    baseURL: `https://api.github.com/repos/${GITHUB_USERNAME}/${STORAGE_REPO}`,
+    headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json"
+    }
+});
+
+// ===== TRANG CHỦ =====
+app.get("/", async (req, res) => {
+    try {
+        const response = await githubAPI.get(`/contents?ref=${BRANCH}`);
+        const files = response.data.filter(f => f.type === "file");
 
         let fileList = files.map(file =>
             `<div class="file">
-                <span>${file}</span>
-                <a href="/uploads/${file}" download>Tải</a>
+                <span>${file.name}</span>
+                <a href="${file.download_url}" download>Tải</a>
             </div>`
         ).join("");
 
@@ -59,58 +72,30 @@ app.get("/", (req, res) => {
         </head>
         <body>
             <h1>Note Block</h1>
-            <p style="font-size:12px; opacity:0.6; margin-top:-10px;">
-                Dev by nghungly
-            </p>
             ${fileList || "<p>Chưa có file nào</p>"}
         </body>
         </html>
         `);
-    });
-});
 
-// ===== CẤU HÌNH UPLOAD =====
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        const tempName = Date.now() + path.extname(file.originalname);
-        cb(null, tempName);
+    } catch (err) {
+        console.error(err.response?.data || err.message);
+        res.send("Lỗi kết nối GitHub");
     }
 });
 
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-    fileFilter: function (req, file, cb) {
+// ===== ADMIN =====
+app.get("/admin", async (req, res) => {
 
-        const allowedExtensions = [".litematic", ".schematic"];
-        const ext = path.extname(file.originalname).toLowerCase();
-
-        if (!allowedExtensions.includes(ext)) {
-            return cb(new Error("Chỉ cho upload .litematic hoặc .schematic"));
-        }
-
-        cb(null, true);
-    }
-});
-
-// ===== TRANG ADMIN =====
-app.get("/admin", (req, res) => {
-
-    fs.readdir(uploadDir, (err, files) => {
-
-        if (err) {
-            console.error(err);
-            return res.send("Lỗi đọc thư mục uploads");
-        }
+    try {
+        const response = await githubAPI.get(`/contents?ref=${BRANCH}`);
+        const files = response.data.filter(f => f.type === "file");
 
         let fileList = files.map(file => `
             <div class="file">
-                <span>${file}</span>
+                <span>${file.name}</span>
                 <form action="/delete" method="POST" style="display:inline;">
-                    <input type="hidden" name="filename" value="${file}">
+                    <input type="hidden" name="filename" value="${file.name}">
+                    <input type="hidden" name="sha" value="${file.sha}">
                     <input type="password" name="password" placeholder="Password" required>
                     <button type="submit">Xoá</button>
                 </form>
@@ -121,19 +106,16 @@ app.get("/admin", (req, res) => {
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>Note Block File - Admin</title>
+            <title>Admin</title>
             <link rel="stylesheet" href="/style.css">
         </head>
         <body>
-            <h1>🎵 Note Block File - Admin</h1>
+            <h1>🎵 Admin</h1>
 
             <form action="/upload" method="POST" enctype="multipart/form-data">
                 <input type="password" name="password" placeholder="Password" required><br><br>
-
                 <input type="file" name="file" required><br><br>
-
                 <input type="text" name="customName" placeholder="Nhập tên file" required><br><br>
-
                 <button type="submit">Upload</button>
             </form>
 
@@ -143,11 +125,15 @@ app.get("/admin", (req, res) => {
         </body>
         </html>
         `);
-    });
+
+    } catch (err) {
+        console.error(err.response?.data || err.message);
+        res.send("Lỗi kết nối GitHub");
+    }
 });
 
 // ===== UPLOAD =====
-app.post("/upload", upload.single("file"), (req, res) => {
+app.post("/upload", upload.single("file"), async (req, res) => {
 
     if (req.body.password !== ADMIN_PASSWORD) {
         return res.send("Sai mật khẩu!");
@@ -161,39 +147,54 @@ app.post("/upload", upload.single("file"), (req, res) => {
     customName = customName.replace(/\.+$/, "");
 
     const ext = path.extname(req.file.originalname).toLowerCase();
-    const newName = customName + ext;
+    const fileName = customName + ext;
 
-    const oldPath = req.file.path;
-    let finalPath = path.join(uploadDir, newName);
+    const content = fs.readFileSync(req.file.path).toString("base64");
 
-    if (fs.existsSync(finalPath)) {
-        finalPath = path.join(uploadDir, customName + "-" + Date.now() + ext);
+    try {
+        await githubAPI.put(`/contents/${fileName}`, {
+            message: `Upload ${fileName}`,
+            content: content,
+            branch: BRANCH
+        });
+
+        fs.unlinkSync(req.file.path);
+
+        res.redirect("/admin");
+
+    } catch (err) {
+        console.error(err.response?.data || err.message);
+        res.send("Lỗi upload GitHub");
     }
-
-    fs.renameSync(oldPath, finalPath);
-
-    res.redirect("/admin");
 });
 
-// ===== XOÁ =====
-app.post("/delete", (req, res) => {
+// ===== DELETE =====
+app.post("/delete", async (req, res) => {
 
-    const { password, filename } = req.body;
+    const { password, filename, sha } = req.body;
 
     if (password !== ADMIN_PASSWORD) {
         return res.send("Sai mật khẩu!");
     }
 
-    const filePath = path.join(uploadDir, filename);
+    try {
+        await githubAPI.delete(`/contents/${filename}`, {
+            data: {
+                message: `Delete ${filename}`,
+                sha: sha,
+                branch: BRANCH
+            }
+        });
 
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+        res.redirect("/admin");
+
+    } catch (err) {
+        console.error(err.response?.data || err.message);
+        res.send("Lỗi xoá file");
     }
-
-    res.redirect("/admin");
 });
 
-// ===== START SERVER =====
+// ===== START =====
 app.listen(PORT, () => {
     console.log("Server running on port " + PORT);
 });
