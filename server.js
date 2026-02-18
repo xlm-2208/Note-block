@@ -55,7 +55,10 @@ const githubAPI = axios.create({
 app.get("/", async (req, res) => {
     try {
         const response = await githubAPI.get(`/contents/${GITHUB_FOLDER}?ref=${BRANCH}`);
-        const files = response.data.filter(f => f.type === "file");
+        const files = response.data.filter(f =>
+            f.type === "file" &&
+            [".litematic", ".schematic"].some(ext => f.name.endsWith(ext))
+        );
 
         let fileList = files.map(file =>
             `<div class="file">
@@ -89,7 +92,10 @@ app.get("/admin", async (req, res) => {
 
     try {
         const response = await githubAPI.get(`/contents/${GITHUB_FOLDER}?ref=${BRANCH}`);
-        const files = response.data.filter(f => f.type === "file");
+        const files = response.data.filter(f =>
+            f.type === "file" &&
+            [".litematic", ".schematic"].some(ext => f.name.endsWith(ext))
+        );
 
         let fileList = files.map(file => `
             <div class="file">
