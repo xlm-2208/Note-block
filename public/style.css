@@ -1,12 +1,54 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     background: #111;
     color: white;
     font-family: Arial;
     padding: 20px;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden; /* tránh tràn ngang */
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
 }
 
 h1 {
     text-align: center;
+    font-size: 36px;
+}
+
+/* Ảnh tự co */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Button */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* File grid */
+.file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+/* Card file */
+.file-card {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    word-break: break-word; /* tránh vỡ layout */
 }
 
 .file {
@@ -31,3 +73,28 @@ h1 {
     color: #00c853;
     font-weight: bold;
 }
+
+/* Tablet */
+@media (max-width: 1024px) {
+    h1 {
+        font-size: 28px;
+    }
+}
+
+/* Điện thoại */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    button {
+        width: 100%;
+        font-size: 18px;
+    }
+}
+

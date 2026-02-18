@@ -75,6 +75,7 @@ app.get("/", async (req, res) => {
             <title>Schematic Download</title>
             <link rel="stylesheet" href="/style.css">
             <link rel="icon" type="image/x-icon" href="/favicon.ico">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
         <body>
             <h1 style="text-align:center;">Download file Schematic Note Block</h1>
