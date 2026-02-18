@@ -118,6 +118,9 @@ app.get("/admin", async (req, res) => {
         </head>
         <body>
             <h1>🎵 Admin</h1>
+            <p style="font-size:12px; opacity:0.6; margin-top:-10px;">
+                Dev by Nguyễn Hưng Ly
+            </p>
 
             <form action="/upload" method="POST" enctype="multipart/form-data">
                 <input type="password" name="password" placeholder="Password" required><br><br>
