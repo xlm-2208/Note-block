@@ -81,18 +81,16 @@ app.get("/", async (req, res) => {
                 opacity:0.8;
                 margin-top:-10px;
             ">
-                Dev by Nguyễn Hưng Ly · 
-                <a href="https://www.tiktok.com/nghungly"
+                Dev by Nguyễn Hưng Ly
+            </p>
+            <p style="font-size:13px; margin-top:-8px;">
+                My tiktok: 
+                <a href="https://www.tiktok.com/@nghungly"
                 target="_blank"
-                style="
-                    color:#ff0050;
-                    font-weight:bold;
-                    text-decoration:none;
-                ">
-                Follow on TikTok
+                style="color:#ff0050; font-weight:bold; text-decoration:none;">
+                    nghungly
                 </a>
             </p>
-
 
             ${fileList || "<p>Chưa có file nào</p>"}
         </body>
