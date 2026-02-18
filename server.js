@@ -76,6 +76,15 @@ app.get("/", async (req, res) => {
         </head>
         <body>
             <h1>Note Block</h1>
+            <p style="
+                font-size:13px;
+                opacity:0.7;
+                margin-top:-10px;
+                letter-spacing:0.5px;
+            ">
+                Dev by Nguyễn Hưng Ly
+            </p>
+
             ${fileList || "<p>Chưa có file nào</p>"}
         </body>
         </html>
