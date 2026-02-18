@@ -16,6 +16,9 @@ if (!fs.existsSync("uploads")) {
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/style.css", express.static(path.join(__dirname, "public/style.css")));
+app.get("/ping", (req, res) => {
+    res.send("OK");
+});
 
 // ===== CẤU HÌNH UPLOAD =====
 const storage = multer.diskStorage({
