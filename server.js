@@ -6,6 +6,7 @@ const axios = require("axios");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const GITHUB_FOLDER = "files";
 
 const ADMIN_PASSWORD = "sclscl123456789@@@@";
 
@@ -53,7 +54,7 @@ const githubAPI = axios.create({
 // ===== TRANG CHỦ =====
 app.get("/", async (req, res) => {
     try {
-        const response = await githubAPI.get(`/contents?ref=${BRANCH}`);
+        const response = await githubAPI.get(`/contents/${GITHUB_FOLDER}?ref=${BRANCH}`);
         const files = response.data.filter(f => f.type === "file");
 
         let fileList = files.map(file =>
@@ -87,7 +88,7 @@ app.get("/", async (req, res) => {
 app.get("/admin", async (req, res) => {
 
     try {
-        const response = await githubAPI.get(`/contents?ref=${BRANCH}`);
+        const response = await githubAPI.get(`/contents/${GITHUB_FOLDER}?ref=${BRANCH}`);
         const files = response.data.filter(f => f.type === "file");
 
         let fileList = files.map(file => `
@@ -178,7 +179,7 @@ app.post("/delete", async (req, res) => {
     }
 
     try {
-        await githubAPI.delete(`/contents/${filename}`, {
+        await githubAPI.delete(`/contents/${GITHUB_FOLDER}/${filename}`, {
             data: {
                 message: `Delete ${filename}`,
                 sha: sha,
